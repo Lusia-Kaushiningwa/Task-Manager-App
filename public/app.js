@@ -28,44 +28,44 @@ class TaskManager {
         this.tasks = this.tasks.filter(t => t.id !== id);
         this.render();
     }
-    editTask(id, newTitle, newDescription) {
+    editTask(id, title, desc) {
         const task = this.getTaskById(id);
         if (task) {
-            task.title = newTitle;
-            task.description = newDescription;
+            task.title = title;
+            task.description = desc;
             this.render();
         }
     }
     render() {
-        const taskList = document.getElementById("taskList");
-        taskList.innerHTML = "";
+        const table = document.getElementById("taskTable");
+        table.innerHTML = "";
         this.tasks.forEach(task => {
-            const div = document.createElement("div");
-            div.className = "task";
-            div.innerHTML = `
-        <h3>${task.title} ${task.completed ? "✔️" : ""}</h3>
-        <p>${task.description}</p>
-        <button onclick="toggleComplete(${task.id})">Toggle Complete</button>
-        <button onclick="deleteTask(${task.id})">Delete</button>
-        <button onclick="editTaskPrompt(${task.id})">Edit</button>
+            const row = document.createElement("tr");
+            row.innerHTML = `
+        <td>${task.id}</td>
+        <td>${task.title}</td>
+        <td>${task.description}</td>
+        <td>${task.completed ? "✅" : "❌"}</td>
+        <td>
+          <button onclick="toggleComplete(${task.id})">✔</button>
+          <button onclick="editTaskPrompt(${task.id})">✏</button>
+          <button onclick="deleteTask(${task.id})">🗑</button>
+        </td>
       `;
-            taskList.appendChild(div);
+            table.appendChild(row);
         });
     }
 }
-// Instantiate manager
 const manager = new TaskManager();
 let currentId = 1;
-// UI Functions
 function addTask() {
-    const titleInput = document.getElementById("title");
-    const descInput = document.getElementById("description");
-    if (!titleInput.value)
+    const title = document.getElementById("title").value;
+    const desc = document.getElementById("description").value;
+    if (!title)
         return;
-    const task = new Task(currentId++, titleInput.value, descInput.value);
-    manager.addTask(task);
-    titleInput.value = "";
-    descInput.value = "";
+    manager.addTask(new Task(currentId++, title, desc));
+    document.getElementById("title").value = "";
+    document.getElementById("description").value = "";
 }
 function toggleComplete(id) {
     manager.markTaskComplete(id);
@@ -83,5 +83,11 @@ function editTaskPrompt(id) {
         manager.editTask(id, newTitle, newDesc);
     }
 }
+// attach events (module-safe)
+document.getElementById("addBtn").addEventListener("click", addTask);
+// expose for inline buttons
+window.toggleComplete = toggleComplete;
+window.deleteTask = deleteTask;
+window.editTaskPrompt = editTaskPrompt;
 export {};
 //# sourceMappingURL=app.js.map

@@ -1,3 +1,4 @@
+
 class Task {
   constructor(
     public id: number,
@@ -6,6 +7,7 @@ class Task {
     public completed: boolean = false
   ) {}
 }
+
 class TaskManager {
   private tasks: Task[] = [];
 
@@ -25,57 +27,58 @@ class TaskManager {
       this.render();
     }
   }
+
   deleteTask(id: number): void {
     this.tasks = this.tasks.filter(t => t.id !== id);
     this.render();
   }
 
-  editTask(id: number, newTitle: string, newDescription: string): void {
+  editTask(id: number, title: string, desc: string): void {
     const task = this.getTaskById(id);
     if (task) {
-      task.title = newTitle;
-      task.description = newDescription;
+      task.title = title;
+      task.description = desc;
       this.render();
     }
   }
 
   render(): void {
-    const taskList = document.getElementById("taskList")!;
-    taskList.innerHTML = "";
+    const table = document.getElementById("taskTable")!;
+    table.innerHTML = "";
 
     this.tasks.forEach(task => {
-      const div = document.createElement("div");
-      div.className = "task";
+      const row = document.createElement("tr");
 
-      div.innerHTML = `
-        <h3>${task.title} ${task.completed ? "✔️" : ""}</h3>
-        <p>${task.description}</p>
-        <button onclick="toggleComplete(${task.id})">Toggle Complete</button>
-        <button onclick="deleteTask(${task.id})">Delete</button>
-        <button onclick="editTaskPrompt(${task.id})">Edit</button>
+      row.innerHTML = `
+        <td>${task.id}</td>
+        <td>${task.title}</td>
+        <td>${task.description}</td>
+        <td>${task.completed ? "✅" : "❌"}</td>
+        <td>
+          <button onclick="toggleComplete(${task.id})">✔</button>
+          <button onclick="editTaskPrompt(${task.id})">✏</button>
+          <button onclick="deleteTask(${task.id})">🗑</button>
+        </td>
       `;
 
-      taskList.appendChild(div);
+      table.appendChild(row);
     });
   }
 }
 
-// Instantiate manager
 const manager = new TaskManager();
 let currentId = 1;
 
-// UI Functions
 function addTask(): void {
-  const titleInput = document.getElementById("title") as HTMLInputElement;
-  const descInput = document.getElementById("description") as HTMLTextAreaElement;
+  const title = (document.getElementById("title") as HTMLInputElement).value;
+  const desc = (document.getElementById("description") as HTMLTextAreaElement).value;
 
-  if (!titleInput.value) return;
+  if (!title) return;
 
-  const task = new Task(currentId++, titleInput.value, descInput.value);
-  manager.addTask(task);
+  manager.addTask(new Task(currentId++, title, desc));
 
-  titleInput.value = "";
-  descInput.value = "";
+  (document.getElementById("title") as HTMLInputElement).value = "";
+  (document.getElementById("description") as HTMLTextAreaElement).value = "";
 }
 
 function toggleComplete(id: number): void {
@@ -97,3 +100,11 @@ function editTaskPrompt(id: number): void {
     manager.editTask(id, newTitle, newDesc);
   }
 }
+
+// attach events (module-safe)
+document.getElementById("addBtn")!.addEventListener("click", addTask);
+
+// expose for inline buttons
+(window as any).toggleComplete = toggleComplete;
+(window as any).deleteTask = deleteTask;
+(window as any).editTaskPrompt = editTaskPrompt;
