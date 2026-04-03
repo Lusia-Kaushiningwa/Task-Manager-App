@@ -1,4 +1,3 @@
-
 class Task {
   constructor(
     public id: number,
@@ -10,6 +9,7 @@ class Task {
 
 class TaskManager {
   private tasks: Task[] = [];
+  private editId: number | null = null;
 
   addTask(task: Task): void {
     this.tasks.push(task);
@@ -33,20 +33,52 @@ class TaskManager {
     this.render();
   }
 
-  editTask(id: number, title: string, desc: string): void {
+  openEditModal(id: number): void {
     const task = this.getTaskById(id);
+    if (!task) return;
+
+    this.editId = id;
+    (document.getElementById("editTitle") as HTMLInputElement).value = task.title;
+    (document.getElementById("editDesc") as HTMLTextAreaElement).value = task.description;
+    document.getElementById("modal")!.style.display = "block";
+  }
+
+  saveEdit(): void {
+    if (this.editId === null) return;
+    const task = this.getTaskById(this.editId);
+
     if (task) {
-      task.title = title;
-      task.description = desc;
-      this.render();
+      task.title = (document.getElementById("editTitle") as HTMLInputElement).value;
+      task.description = (document.getElementById("editDesc") as HTMLTextAreaElement).value;
     }
+
+    this.closeModal();
+    this.render();
+  }
+
+  closeModal(): void {
+    document.getElementById("modal")!.style.display = "none";
   }
 
   render(): void {
     const table = document.getElementById("taskTable")!;
+    const search = (document.getElementById("search") as HTMLInputElement).value.toLowerCase();
+    const filter = (document.getElementById("filter") as HTMLSelectElement).value;
+
     table.innerHTML = "";
 
-    this.tasks.forEach(task => {
+    let filtered = this.tasks.filter(task =>
+      task.title.toLowerCase().includes(search) ||
+      task.description.toLowerCase().includes(search)
+    );
+
+    if (filter === "completed") {
+      filtered = filtered.filter(t => t.completed);
+    } else if (filter === "pending") {
+      filtered = filtered.filter(t => !t.completed);
+    }
+
+    filtered.forEach(task => {
       const row = document.createElement("tr");
 
       row.innerHTML = `
@@ -56,7 +88,7 @@ class TaskManager {
         <td>${task.completed ? "✅" : "❌"}</td>
         <td>
           <button onclick="toggleComplete(${task.id})">✔</button>
-          <button onclick="editTaskPrompt(${task.id})">✏</button>
+          <button onclick="openEdit(${task.id})">✏</button>
           <button onclick="deleteTask(${task.id})">🗑</button>
         </td>
       `;
@@ -89,22 +121,22 @@ function deleteTask(id: number): void {
   manager.deleteTask(id);
 }
 
-function editTaskPrompt(id: number): void {
-  const task = manager.getTaskById(id);
-  if (!task) return;
-
-  const newTitle = prompt("Edit title:", task.title);
-  const newDesc = prompt("Edit description:", task.description);
-
-  if (newTitle !== null && newDesc !== null) {
-    manager.editTask(id, newTitle, newDesc);
-  }
+function openEdit(id: number): void {
+  manager.openEditModal(id);
 }
 
-// attach events (module-safe)
-document.getElementById("addBtn")!.addEventListener("click", addTask);
+function closeModal(): void {
+  manager.closeModal();
+}
 
-// expose for inline buttons
+// event listeners
+document.getElementById("addBtn")!.addEventListener("click", addTask);
+document.getElementById("saveEdit")!.addEventListener("click", () => manager.saveEdit());
+document.getElementById("search")!.addEventListener("input", () => manager.render());
+document.getElementById("filter")!.addEventListener("change", () => manager.render());
+
+// expose for buttons
 (window as any).toggleComplete = toggleComplete;
 (window as any).deleteTask = deleteTask;
-(window as any).editTaskPrompt = editTaskPrompt;
+(window as any).openEdit = openEdit;
+(window as any).closeModal = closeModal;

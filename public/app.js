@@ -9,6 +9,7 @@ class Task {
 class TaskManager {
     constructor() {
         this.tasks = [];
+        this.editId = null;
     }
     addTask(task) {
         this.tasks.push(task);
@@ -28,18 +29,43 @@ class TaskManager {
         this.tasks = this.tasks.filter(t => t.id !== id);
         this.render();
     }
-    editTask(id, title, desc) {
+    openEditModal(id) {
         const task = this.getTaskById(id);
+        if (!task)
+            return;
+        this.editId = id;
+        document.getElementById("editTitle").value = task.title;
+        document.getElementById("editDesc").value = task.description;
+        document.getElementById("modal").style.display = "block";
+    }
+    saveEdit() {
+        if (this.editId === null)
+            return;
+        const task = this.getTaskById(this.editId);
         if (task) {
-            task.title = title;
-            task.description = desc;
-            this.render();
+            task.title = document.getElementById("editTitle").value;
+            task.description = document.getElementById("editDesc").value;
         }
+        this.closeModal();
+        this.render();
+    }
+    closeModal() {
+        document.getElementById("modal").style.display = "none";
     }
     render() {
         const table = document.getElementById("taskTable");
+        const search = document.getElementById("search").value.toLowerCase();
+        const filter = document.getElementById("filter").value;
         table.innerHTML = "";
-        this.tasks.forEach(task => {
+        let filtered = this.tasks.filter(task => task.title.toLowerCase().includes(search) ||
+            task.description.toLowerCase().includes(search));
+        if (filter === "completed") {
+            filtered = filtered.filter(t => t.completed);
+        }
+        else if (filter === "pending") {
+            filtered = filtered.filter(t => !t.completed);
+        }
+        filtered.forEach(task => {
             const row = document.createElement("tr");
             row.innerHTML = `
         <td>${task.id}</td>
@@ -48,7 +74,7 @@ class TaskManager {
         <td>${task.completed ? "✅" : "❌"}</td>
         <td>
           <button onclick="toggleComplete(${task.id})">✔</button>
-          <button onclick="editTaskPrompt(${task.id})">✏</button>
+          <button onclick="openEdit(${task.id})">✏</button>
           <button onclick="deleteTask(${task.id})">🗑</button>
         </td>
       `;
@@ -73,21 +99,21 @@ function toggleComplete(id) {
 function deleteTask(id) {
     manager.deleteTask(id);
 }
-function editTaskPrompt(id) {
-    const task = manager.getTaskById(id);
-    if (!task)
-        return;
-    const newTitle = prompt("Edit title:", task.title);
-    const newDesc = prompt("Edit description:", task.description);
-    if (newTitle !== null && newDesc !== null) {
-        manager.editTask(id, newTitle, newDesc);
-    }
+function openEdit(id) {
+    manager.openEditModal(id);
 }
-// attach events (module-safe)
+function closeModal() {
+    manager.closeModal();
+}
+// event listeners
 document.getElementById("addBtn").addEventListener("click", addTask);
-// expose for inline buttons
+document.getElementById("saveEdit").addEventListener("click", () => manager.saveEdit());
+document.getElementById("search").addEventListener("input", () => manager.render());
+document.getElementById("filter").addEventListener("change", () => manager.render());
+// expose for buttons
 window.toggleComplete = toggleComplete;
 window.deleteTask = deleteTask;
-window.editTaskPrompt = editTaskPrompt;
+window.openEdit = openEdit;
+window.closeModal = closeModal;
 export {};
 //# sourceMappingURL=app.js.map
