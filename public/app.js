@@ -1,3 +1,4 @@
+console.log("JS is running");
 class Task {
     constructor(id, title, description, completed = false) {
         this.id = id;
