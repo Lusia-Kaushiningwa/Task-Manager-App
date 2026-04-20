@@ -1,3 +1,4 @@
+console.log("JS is running");
 class Task {
   constructor(
     public id: number,
