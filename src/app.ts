@@ -15,6 +15,7 @@ class TaskManager {
   addTask(task: Task): void {
     this.tasks.push(task);
     this.render();
+  (document.getElementById("filter") as HTMLSelectElement).value = "all";
   }
 
   getTaskById(id: number): Task | undefined {
