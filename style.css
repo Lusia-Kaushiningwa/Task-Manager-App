@@ -46,3 +46,10 @@ h1 {
     color: hotpink;
     text-align: center;
 }
+
+@media (prefers-color-scheme: dark) {
+    body {
+      background-color: #121212;
+      color: #ffffff;
+    }
+  }
