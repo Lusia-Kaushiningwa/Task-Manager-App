@@ -1,4 +1,5 @@
 console.log("JS is running");
+
 class Task {
   constructor(
     public id: number,
@@ -14,8 +15,8 @@ class TaskManager {
 
   addTask(task: Task): void {
     this.tasks.push(task);
+    (document.getElementById("filter") as HTMLSelectElement).value = "all";
     this.render();
-  (document.getElementById("filter") as HTMLSelectElement).value = "all";
   }
 
   getTaskById(id: number): Task | undefined {
@@ -63,6 +64,7 @@ class TaskManager {
   }
 
   render(): void {
+  
     const table = document.getElementById("taskTable")!;
     const search = (document.getElementById("search") as HTMLInputElement).value.toLowerCase();
     const filter = (document.getElementById("filter") as HTMLSelectElement).value;
@@ -131,13 +133,13 @@ function closeModal(): void {
   manager.closeModal();
 }
 
-// event listeners
+// Event listeners
 document.getElementById("addBtn")!.addEventListener("click", addTask);
 document.getElementById("saveEdit")!.addEventListener("click", () => manager.saveEdit());
 document.getElementById("search")!.addEventListener("input", () => manager.render());
 document.getElementById("filter")!.addEventListener("change", () => manager.render());
 
-// expose for buttons
+// Expose for inline button onclick handlers
 (window as any).toggleComplete = toggleComplete;
 (window as any).deleteTask = deleteTask;
 (window as any).openEdit = openEdit;

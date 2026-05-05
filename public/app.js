@@ -14,6 +14,7 @@ class TaskManager {
     }
     addTask(task) {
         this.tasks.push(task);
+        document.getElementById("filter").value = "all";
         this.render();
     }
     getTaskById(id) {
@@ -106,12 +107,12 @@ function openEdit(id) {
 function closeModal() {
     manager.closeModal();
 }
-// event listeners
+// Event listeners
 document.getElementById("addBtn").addEventListener("click", addTask);
 document.getElementById("saveEdit").addEventListener("click", () => manager.saveEdit());
 document.getElementById("search").addEventListener("input", () => manager.render());
 document.getElementById("filter").addEventListener("change", () => manager.render());
-// expose for buttons
+// Expose for inline button onclick handlers
 window.toggleComplete = toggleComplete;
 window.deleteTask = deleteTask;
 window.openEdit = openEdit;
