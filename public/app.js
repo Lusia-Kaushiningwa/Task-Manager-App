@@ -1,3 +1,4 @@
+"use strict";
 console.log("JS is running");
 class Task {
     constructor(id, title, description, completed = false) {
@@ -70,16 +71,31 @@ class TaskManager {
         filtered.forEach(task => {
             const row = document.createElement("tr");
             row.innerHTML = `
-        <td>${task.id}</td>
-        <td>${task.title}</td>
-        <td>${task.description}</td>
-        <td>${task.completed ? "✅" : "❌"}</td>
-        <td>
-          <button onclick="toggleComplete(${task.id})">✔</button>
-          <button onclick="openEdit(${task.id})">✏</button>
-          <button onclick="deleteTask(${task.id})">🗑</button>
-        </td>
-      `;
+                <td>${task.id}</td>
+                <td>${task.title}</td>
+                <td>${task.description}</td>
+                <td>${task.completed ? "✅ Done" : "❌ Pending"}</td>
+                <td class="action-buttons">
+                    <button 
+                        onclick="toggleComplete(${task.id})" 
+                        title="${task.completed ? 'Mark as Pending' : 'Mark as Complete'}"
+                        class="btn-complete">
+                        ✔
+                    </button>
+                    <button 
+                        onclick="openEdit(${task.id})" 
+                        title="Edit this task"
+                        class="btn-edit">
+                        ✏️
+                    </button>
+                    <button 
+                        onclick="deleteTask(${task.id})" 
+                        title="Delete this task"
+                        class="btn-delete">
+                        🗑️
+                    </button>
+                </td>
+            `;
             table.appendChild(row);
         });
     }
@@ -117,5 +133,4 @@ window.toggleComplete = toggleComplete;
 window.deleteTask = deleteTask;
 window.openEdit = openEdit;
 window.closeModal = closeModal;
-export {};
 //# sourceMappingURL=app.js.map

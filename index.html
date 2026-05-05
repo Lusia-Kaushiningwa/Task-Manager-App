@@ -12,17 +12,25 @@
     <div class="container">
         <h1>Task Manager</h1>
 
-        <input id="search" placeholder="Search tasks..." />
-        <select id="filter">
-      <option value="all">All</option>
-      <option value="completed">Completed</option>
-      <option value="pending">Pending</option>
-    </select>
+        <!-- Add Task Form -->
+        <div class="form-section">
+            <h2>Add New Task</h2>
+            <input id="title" placeholder="Task Title" />
+            <textarea id="description" placeholder="Task Description"></textarea>
+            <button id="addBtn" title="Add a new task">➕ Add Task</button>
+        </div>
 
-        <input id="title" placeholder="Task Title" />
-        <textarea id="description" placeholder="Task Description"></textarea>
-        <button id="addBtn">Add Task</button>
+        <!-- Search & Filter -->
+        <div class="filter-section">
+            <input id="search" placeholder="🔍 Search tasks..." />
+            <select id="filter">
+                <option value="all">All Tasks</option>
+                <option value="completed">✅ Completed</option>
+                <option value="pending">❌ Pending</option>
+            </select>
+        </div>
 
+        <!-- Task Table -->
         <table>
             <thead>
                 <tr>
@@ -37,16 +45,19 @@
         </table>
     </div>
 
-    <!-- Modal -->
+    <!-- Edit Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h3>Edit Task</h3>
-            <input id="editTitle" />
-            <textarea id="editDesc"></textarea>
-            <button id="saveEdit">Save</button>
-            <button onclick="closeModal()">Cancel</button>
+            <h3>✏️ Edit Task</h3>
+            <input id="editTitle" placeholder="Edit title" />
+            <textarea id="editDesc" placeholder="Edit description"></textarea>
+            <div class="modal-buttons">
+                <button id="saveEdit" title="Save changes">💾 Save</button>
+                <button onclick="closeModal()" title="Cancel editing">✖ Cancel</button>
+            </div>
         </div>
     </div>
+
     <script src="public/app.js"></script>
 </body>
 
